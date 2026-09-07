@@ -1,5 +1,7 @@
 # Consulta de Riesgo Financiero
 
+[![CI](https://github.com/dpv20/consulta-riesgo-financiero/actions/workflows/ci.yml/badge.svg)](https://github.com/dpv20/consulta-riesgo-financiero/actions/workflows/ci.yml)
+
 MVP que permite evaluar el *score* crediticio de personas o empresas según su RUT, con
 autenticación JWT y control de acceso basado en roles.
 
@@ -149,8 +151,44 @@ y los tipos en compilación no puedan desincronizarse.
 npm test
 ```
 
-Cubren el cálculo determinista del score, la matriz de autorización por rol y el
-comportamiento de las vistas ante errores.
+48 pruebas: el cálculo determinista del score, la validación de RUT, la matriz completa de
+autenticación y autorización sobre la API levantada en memoria con supertest, y el
+comportamiento de las vistas ante cada tipo de error.
+
+Se ejecutan también en CI —junto con el lint, la verificación de tipos y el build— en cada
+push a `main`.
+
+## Limitaciones y qué haría en producción
+
+El alcance del ejercicio es un MVP con autenticación simulada. Las simplificaciones son
+deliberadas; esto es lo que faltaría para llevarlo a un entorno real.
+
+**Persistencia y credenciales.** Los usuarios viven en una constante y las contraseñas
+están en texto plano para que el proyecto se pueda ejecutar sin montar nada. En producción
+irían en base de datos y las contraseñas hasheadas con argon2 o bcrypt.
+
+**Ciclo de vida de la sesión.** El token dura 15 minutos y, al vencer, la persona vuelve a
+ingresar. Correspondería un *refresh token* en cookie `httpOnly` con rotación y una lista de
+revocación, de modo que un token robado se pueda invalidar.
+
+**Límite de intentos.** `POST /login` no tiene rate limiting. En un servicio financiero es
+imprescindible: límite por IP y por identificador, con backoff, para frenar fuerza bruta y
+enumeración de RUTs.
+
+**Origen del score.** El cálculo determinista cumple la regla del enunciado, pero **no es un
+modelo de riesgo**: es un hash del RUT. En producción vendría de un bureau de crédito o de
+un modelo propio, con caché, versionado del modelo y trazabilidad de qué versión produjo
+cada resultado.
+
+**Auditoría.** Toda consulta de score debería quedar registrada —quién consultó qué RUT y
+cuándo—, tanto por regulación como para detectar uso indebido. Hoy no se registra nada.
+
+**Observabilidad.** Faltan logs estructurados con identificador de petición, métricas de
+latencia y error, y alertas. Hoy solo hay `console.error` para los fallos no controlados.
+
+**Cabeceras de seguridad.** Correspondería `helmet` para las cabeceras estándar, HSTS y
+forzar HTTPS. La configuración de CORS ya restringe el origen a uno solo, por variable de
+entorno.
 
 ## Despliegue
 

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verificacion:
+    name: Lint, tipos, pruebas y build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      # `npm ci` instala los dos paquetes del workspace desde el lockfile de la raíz.
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint -w frontend
+
+      - name: Verificación de tipos
+        run: npm run typecheck
+
+      # Las pruebas del backend fijan sus variables de entorno en src/test/setup.ts,
+      # así que no dependen de un archivo .env que no está versionado.
+      - name: Pruebas
+        run: npm test
+
+      - name: Build
+        run: npm run build
