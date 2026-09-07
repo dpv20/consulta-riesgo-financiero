@@ -5,5 +5,6 @@ coverage/
 *.local
 .DS_Store
 
-# Notas internas de preparacion: no forman parte de la entrega
+# Documentos internos de trabajo: no forman parte de la entrega
 NOTAS.md
+TODO.md
