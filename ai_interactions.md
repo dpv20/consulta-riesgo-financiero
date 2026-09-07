@@ -9,8 +9,8 @@ a medida que avanza el desarrollo.
 | Herramienta | Modelo | Estado | Uso |
 |---|---|---|---|
 | Claude Code | Opus 5 | En uso | Preparación del entorno, andamiaje de ambos proyectos, decisiones de arquitectura, documentación |
-| Antigravity | Gemini | No utilizada | — |
-| Codex | GPT | No utilizada | — |
+| Antigravity | Gemini | No utilizada | Mejora de UI y diseño, vale decir experto en UX/UI
+| Codex | GPT | No utilizada | Revision final y definicion de mejoras |
 
 El desarrollo se resolvió íntegramente con Claude Code. Las otras dos herramientas se
 consideraron para repartir trabajo pero finalmente no se usaron, y no hay código suyo en el
