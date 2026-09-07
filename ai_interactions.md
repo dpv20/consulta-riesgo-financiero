@@ -9,11 +9,12 @@ a medida que avanza el desarrollo.
 | Herramienta | Modelo | Estado | Uso |
 |---|---|---|---|
 | Claude Code | Opus 5 | En uso | Preparación del entorno, andamiaje de ambos proyectos, decisiones de arquitectura, documentación |
-| Antigravity | Gemini | Previsto | Componentes de UI, responsive, accesibilidad |
-| Codex | GPT | Previsto | Endpoints, middlewares de JWT, tests del backend |
+| Antigravity | Gemini | No utilizada | — |
+| Codex | GPT | No utilizada | — |
 
-Cuando una herramienta prevista se use realmente, su fila pasa a "En uso" y sus aportes se
-detallan abajo.
+El desarrollo se resolvió íntegramente con Claude Code. Las otras dos herramientas se
+consideraron para repartir trabajo pero finalmente no se usaron, y no hay código suyo en el
+repositorio.
 
 ## Criterio de uso
 
@@ -85,6 +86,19 @@ desafío. Ningún código de la solución se escribió en esta etapa.
 - Se detectó que el RUT de ejemplo del enunciado, `12.345.678-9`, no satisface el módulo 11.
   Se decidió no rechazar por dígito verificador para no invalidar el ejemplo de la propia
   especificación; queda documentado en el README y en `docs/API.md`.
+
+### 2026-09-07 — Implementación del frontend
+
+**Asistido por Claude Code:**
+- Normalización de errores de la API a un tipo único con código estable, y el mapa de
+  códigos a los mensajes que ve la persona usuaria.
+- Cliente HTTP con token en memoria e interceptores, y estado de sesión con Zustand.
+- Hooks de datos sobre TanStack Query para el login y la consulta de score.
+- Componentes base —alerta, campo de formulario, botón y tarjeta de resultado— con
+  etiquetas y descripciones enlazadas por `aria`.
+- Pantallas de login y de consulta, con ruta protegida y cierre de sesión.
+- Nueve pruebas de flujo sobre la interfaz: ingreso correcto e incorrecto, fallo de red,
+  redirección sin sesión, consulta exitosa, rechazo por RUT ajeno y validación local.
 
 <!-- Las entradas del desarrollo de la solución van a continuación, a medida que ocurren -->
 
