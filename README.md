@@ -8,6 +8,12 @@ autenticación JWT y control de acceso basado en roles.
 - **Backend:** API REST en Node.js + TypeScript (Express), con firma y validación de JWT.
 - **Frontend:** SPA en React + TypeScript (Vite), con login y consulta de score.
 
+**▶ Aplicación en vivo: https://dpv20.github.io/consulta-riesgo-financiero/**
+
+> La API corre en la capa gratuita de Render, que suspende la instancia tras un rato sin
+> uso. **El primer inicio de sesión después de un periodo de inactividad puede tardar cerca
+> de un minuto** mientras el servicio despierta; los siguientes son inmediatos.
+
 ## Requisitos
 
 - **Node.js 20.19 o superior** (desarrollado sobre 24.20.0 LTS). Declarado en `engines`.
@@ -54,7 +60,7 @@ tampoco se almacenan: se calculan en cada consulta.
 | `PORT` | `3000` | Puerto de la API |
 | `JWT_SECRET` | — | **Obligatoria.** Secreto de firma del JWT |
 | `JWT_EXPIRES_IN` | `15m` | Vigencia del token |
-| `CORS_ORIGIN` | `http://localhost:5173` | Origen autorizado |
+| `CORS_ORIGIN` | `http://localhost:5173` | Orígenes autorizados, separados por coma |
 
 **`frontend/.env`**
 
@@ -196,8 +202,15 @@ entorno.
 
 ## Despliegue
 
-La API está desplegada en **https://consulta-riesgo-api.onrender.com** — por ejemplo,
-[`/health`](https://consulta-riesgo-api.onrender.com/health).
+- **Frontend:** https://dpv20.github.io/consulta-riesgo-financiero/ — GitHub Pages, con el
+  workflow `.github/workflows/pages.yml`.
+- **API:** https://consulta-riesgo-api.onrender.com — Render; por ejemplo,
+  [`/health`](https://consulta-riesgo-api.onrender.com/health).
+
+Como Pages sirve el sitio desde un subdirectorio, la ruta base se inyecta por entorno
+(`VITE_BASE`) solo en ese build. Y como Pages no admite reglas de reescritura, el workflow
+copia `index.html` como `404.html`: ante una ruta desconocida la SPA arranca igual y React
+Router la resuelve en el cliente.
 
 > Corre en la capa gratuita de Render, que suspende la instancia tras un rato sin uso.
 > **La primera petición después de un periodo de inactividad puede tardar cerca de un minuto
