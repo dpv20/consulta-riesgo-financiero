@@ -5,7 +5,7 @@ import { Campo } from '@/components/Campo'
 import { TarjetaScore } from '@/components/TarjetaScore'
 import { useScore } from '@/hooks/useScore'
 import { useSesion } from '@/store/sesion'
-import { esFormatoRutValido, formatearRut, tieneDigitoVerificadorValido } from '@/utils/rut'
+import { esFormatoRutValido, esRutValido, formatearRut, tieneDigitoVerificadorValido } from '@/utils/rut'
 
 export function ConsultaPage() {
   const usuario = useSesion((estado) => estado.usuario)
@@ -17,18 +17,18 @@ export function ConsultaPage() {
 
   const consulta = useScore(rutConsultado)
 
-  // El dígito verificador se avisa, pero no impide consultar: el RUT de ejemplo del
-  // enunciado no lo cumple. Ver README.
-  const avisoDigito =
-    rut.length > 0 && esFormatoRutValido(rut) && !tieneDigitoVerificadorValido(rut)
-      ? 'El dígito verificador no corresponde a este RUT'
-      : undefined
-
   function enviar(evento: FormEvent) {
     evento.preventDefault()
 
+    // Se valida antes de llamar para no gastar un viaje de red. La API valida igual.
     if (!esFormatoRutValido(rut)) {
-      setErrorDeFormato('Ingresa un RUT con formato válido, por ejemplo 12.345.678-9')
+      setErrorDeFormato('Ingresa un RUT con formato válido, por ejemplo 12.345.678-5')
+      setRutConsultado('')
+      return
+    }
+
+    if (!tieneDigitoVerificadorValido(rut)) {
+      setErrorDeFormato('El dígito verificador no corresponde a este RUT')
       setRutConsultado('')
       return
     }
@@ -69,12 +69,11 @@ export function ConsultaPage() {
             etiqueta="RUT a consultar"
             name="rut"
             inputMode="text"
-            placeholder="12.345.678-9"
+            placeholder="12.345.678-5"
             value={rut}
             onChange={(evento) => setRut(evento.target.value)}
-            onBlur={() => setRut((actual) => (esFormatoRutValido(actual) ? formatearRut(actual) : actual))}
+            onBlur={() => setRut((actual) => (esRutValido(actual) ? formatearRut(actual) : actual))}
             error={errorDeFormato}
-            ayuda={avisoDigito}
             disabled={consulta.isFetching}
           />
 

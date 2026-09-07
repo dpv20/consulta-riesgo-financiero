@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   calcularDigitoVerificador,
   esFormatoRutValido,
+  esRutValido,
   formatearRut,
   normalizarRut,
   tieneDigitoVerificadorValido,
@@ -44,6 +45,15 @@ describe('calcularDigitoVerificador', () => {
   it('calcula el dígito con módulo 11', () => {
     expect(calcularDigitoVerificador('12345678')).toBe('5')
     expect(calcularDigitoVerificador('11111111')).toBe('1')
+  })
+})
+
+describe('esRutValido', () => {
+  it('exige forma y dígito verificador', () => {
+    expect(esRutValido('12.345.678-5')).toBe(true)
+    expect(esRutValido('11.111.111-1')).toBe(true)
+    expect(esRutValido('12.345.678-9')).toBe(false)
+    expect(esRutValido('no-es-un-rut')).toBe(false)
   })
 })
 

@@ -28,7 +28,11 @@ export class ApiError extends Error {
   }
 
   static rutInvalido() {
-    return new ApiError(400, 'INVALID_RUT', 'El RUT ingresado no es válido')
+    return new ApiError(
+      400,
+      'INVALID_RUT',
+      'El RUT no es válido: revisa el formato y el dígito verificador',
+    )
   }
 
   static credencialesInvalidas() {

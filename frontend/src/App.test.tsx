@@ -12,7 +12,7 @@ vi.mock('@/api/score', () => ({ obtenerScore: vi.fn() }))
 const loginMock = vi.mocked(iniciarSesion)
 const scoreMock = vi.mocked(obtenerScore)
 
-const USER = { id: 'u-002', role: 'user' as const, rut: '12.345.678-9' }
+const USER = { id: 'u-002', role: 'user' as const, rut: '12.345.678-5' }
 
 function iniciarSesionEnElStore() {
   useSesion.setState({ usuario: USER, sesionExpirada: false })
@@ -86,7 +86,7 @@ describe('Consulta de score', () => {
   it('muestra el resultado de una consulta exitosa', async () => {
     iniciarSesionEnElStore()
     scoreMock.mockResolvedValue({
-      rut: '12.345.678-9',
+      rut: '12.345.678-5',
       score: 73,
       fecha: '2026-09-07T14:35:00.000Z',
     })
@@ -131,7 +131,7 @@ describe('Consulta de score', () => {
     expect(scoreMock).not.toHaveBeenCalled()
   })
 
-  it('avisa del dígito verificador sin bloquear la consulta', async () => {
+  it('rechaza un RUT con dígito verificador incorrecto sin llamar a la API', async () => {
     iniciarSesionEnElStore()
     const usuario = userEvent.setup()
 
@@ -140,8 +140,9 @@ describe('Consulta de score', () => {
     const campo = screen.getByLabelText(/rut a consultar/i)
     await usuario.clear(campo)
     await usuario.type(campo, '12.345.678-9')
+    await usuario.click(screen.getByRole('button', { name: /consultar score/i }))
 
-    expect(screen.getByText(/dígito verificador no corresponde/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /consultar score/i })).toBeEnabled()
+    expect(await screen.findByText(/dígito verificador no corresponde/i)).toBeInTheDocument()
+    expect(scoreMock).not.toHaveBeenCalled()
   })
 })

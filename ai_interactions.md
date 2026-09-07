@@ -84,8 +84,10 @@ desafío. Ningún código de la solución se escribió en esta etapa.
 - Se detectó que el payload del JWT usaba la clave `rol` en lugar de `role`, que es la que
   fija el enunciado. Corregido.
 - Se detectó que el RUT de ejemplo del enunciado, `12.345.678-9`, no satisface el módulo 11.
-  Se decidió no rechazar por dígito verificador para no invalidar el ejemplo de la propia
-  especificación; queda documentado en el README y en `docs/API.md`.
+  Se resolvió **validar el dígito verificador de todos modos**, por tratarse de un servicio
+  de riesgo financiero donde aceptar RUTs inexistentes sería un hueco real, y ajustar las
+  credenciales de prueba a `12.345.678-5`. La desviación respecto del ejemplo queda
+  documentada en el README y en `docs/API.md`.
 
 ### 2026-09-07 — Implementación del frontend
 

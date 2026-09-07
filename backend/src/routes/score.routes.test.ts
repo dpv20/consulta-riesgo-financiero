@@ -6,7 +6,7 @@ import { env } from '../config/env.js'
 
 const app = createApp()
 
-const RUT_DEL_USER = '12.345.678-9'
+const RUT_DEL_USER = '12.345.678-5'
 const RUT_AJENO = '11.111.111-1'
 
 let tokenAdmin: string
@@ -73,7 +73,7 @@ describe('GET /score/:rut — autorización', () => {
 
   it('reconoce su RUT aunque venga sin formato', async () => {
     const res = await request(app)
-      .get('/score/123456789')
+      .get('/score/123456785')
       .set('Authorization', 'Bearer ' + tokenUser)
 
     expect(res.status).toBe(200)
@@ -136,6 +136,17 @@ describe('GET /score/:rut — respuesta', () => {
   it('rechaza un RUT con forma inválida', async () => {
     const res = await request(app)
       .get('/score/no-es-un-rut')
+      .set('Authorization', 'Bearer ' + tokenAdmin)
+
+    expect(res.status).toBe(400)
+    expect(res.body.error.code).toBe('INVALID_RUT')
+  })
+
+  it('rechaza un RUT con dígito verificador incorrecto', async () => {
+    // 12.345.678-9 es el RUT del ejemplo del enunciado: su digito verificador deberia
+    // ser 5. Como es un servicio de riesgo financiero, no se aceptan RUTs inexistentes.
+    const res = await request(app)
+      .get('/score/12.345.678-9')
       .set('Authorization', 'Bearer ' + tokenAdmin)
 
     expect(res.status).toBe(400)

@@ -27,7 +27,7 @@ Todos los errores comparten la misma forma, para que el frontend pueda ramificar
 | HTTP | `code` | Cuándo |
 |---|---|---|
 | 400 | `VALIDATION_ERROR` | Cuerpo o parámetro con forma inválida |
-| 400 | `INVALID_RUT` | El RUT no cumple el formato esperado |
+| 400 | `INVALID_RUT` | El RUT no cumple el formato o el dígito verificador |
 | 401 | `INVALID_CREDENTIALS` | Email o contraseña incorrectos en el login |
 | 401 | `UNAUTHENTICATED` | Falta el token, o su firma es inválida |
 | 401 | `TOKEN_EXPIRED` | El token es válido pero expiró |
@@ -58,7 +58,7 @@ Autenticación simulada contra credenciales mock. No hay base de datos.
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": { "id": "u-002", "role": "user", "rut": "12.345.678-9" }
+  "user": { "id": "u-002", "role": "user", "rut": "12.345.678-5" }
 }
 ```
 
@@ -79,7 +79,7 @@ Para un `admin`, `rut` es `null`:
 {
   "sub": "u-002",
   "role": "user",
-  "rut": "12.345.678-9",
+  "rut": "12.345.678-5",
   "iat": 1751034900,
   "exp": 1751035800
 }
@@ -105,13 +105,13 @@ Devuelve el score de riesgo financiero de un RUT. Requiere autenticación.
 | `admin` | Cualquier RUT |
 | `user` | **Únicamente el RUT de su propio token** |
 
-La comparación se hace sobre el RUT **normalizado**, no sobre el texto crudo: `12345678-9`
-y `12.345.678-9` son el mismo RUT y deben resolverse igual.
+La comparación se hace sobre el RUT **normalizado**, no sobre el texto crudo: `12345678-5`
+y `12.345.678-5` son el mismo RUT y deben resolverse igual.
 
 **200 OK**
 
 ```json
-{ "rut": "12.345.678-9", "score": 73, "fecha": "2025-06-27T14:35:00Z" }
+{ "rut": "12.345.678-5", "score": 73, "fecha": "2025-06-27T14:35:00Z" }
 ```
 
 - `rut` — devuelto en formato canónico con puntos y guion.
@@ -139,7 +139,7 @@ veces y compare, y con otro que compruebe que dos RUTs distintos difieren.
 | Email | Password | Rol | RUT |
 |---|---|---|---|
 | `admin@prontopaga.cl` | `admin123` | `admin` | — |
-| `user@prontopaga.cl` | `user123` | `user` | `12.345.678-9` |
+| `user@prontopaga.cl` | `user123` | `user` | `12.345.678-5` |
 
 Credenciales de demostración para una prueba técnica: van en el repositorio a propósito,
 para que el evaluador pueda ejecutar el proyecto. En un sistema real no existirían.
@@ -148,21 +148,22 @@ para que el evaluador pueda ejecutar el proyecto. En un sistema real no existir�
 
 ## RUT: formato y normalización
 
-- **Formato canónico** (el que se muestra y se devuelve): `12.345.678-9`.
-- **Formato normalizado** (el que se compara y con el que se calcula): `123456789`, sin
+- **Formato canónico** (el que se muestra y se devuelve): `12.345.678-5`.
+- **Formato normalizado** (el que se compara y con el que se calcula): `123456785`, sin
   puntos ni guion, con `K` en mayúscula.
-- La API valida la **forma**: cuerpo numérico de 7 u 8 dígitos más un dígito verificador
-  (`0-9` o `K`). Lo que no cumple eso es `400 INVALID_RUT`.
+- La API valida **forma y dígito verificador**: cuerpo numérico de 7 u 8 dígitos, dígito
+  verificador (`0-9` o `K`) y módulo 11 correcto. Lo que no cumple eso es
+  `400 INVALID_RUT`.
 
 ### Sobre el dígito verificador
 
-El **módulo 11 está implementado** (`tieneDigitoVerificadorValido`), pero **no se usa como
-criterio de rechazo**, por una razón concreta: el RUT de ejemplo del enunciado,
-`12.345.678-9`, no lo satisface —a `12345678` le corresponde dígito `5`, no `9`—. Exigirlo
-haría que la propia respuesta de ejemplo de la especificación devolviera un `400`.
+Se exige el **módulo 11**: en un servicio de riesgo financiero, aceptar un RUT inexistente
+permitiría consultar identidades inventadas.
 
-La decisión fue **respetar el ejemplo del enunciado**: la API valida la forma, y el dígito
-verificador se ofrece en el frontend como advertencia al escribir, sin bloquear la consulta.
+> **El RUT del ejemplo del enunciado no lo cumple.** A `12345678` le corresponde dígito `5`,
+> no `9`, de modo que `12.345.678-9` responde `400` de forma deliberada. Las credenciales de
+> prueba usan `12.345.678-5`. Se prefirió sostener la validación antes que reproducir el
+> ejemplo, por el dominio del problema.
 
 ---
 

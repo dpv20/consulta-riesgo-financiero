@@ -26,11 +26,11 @@ describe('POST /login', () => {
       .send({ email: 'user@prontopaga.cl', password: 'user123' })
 
     expect(res.status).toBe(200)
-    expect(res.body.user).toEqual({ id: 'u-002', role: 'user', rut: '12.345.678-9' })
+    expect(res.body.user).toEqual({ id: 'u-002', role: 'user', rut: '12.345.678-5' })
 
     const payload = jwt.decode(res.body.token) as Record<string, unknown>
     expect(payload.role).toBe('user')
-    expect(payload.rut).toBe('12.345.678-9')
+    expect(payload.rut).toBe('12.345.678-5')
   })
 
   it('emite un token con expiración', async () => {

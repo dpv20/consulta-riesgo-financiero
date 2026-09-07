@@ -26,7 +26,7 @@ const USUARIOS: readonly Usuario[] = [
     email: 'user@prontopaga.cl',
     password: 'user123',
     rol: 'user',
-    rut: formatearRut('12345678-9'),
+    rut: formatearRut('12345678-5'),
   },
 ]
 

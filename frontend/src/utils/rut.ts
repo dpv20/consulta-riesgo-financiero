@@ -29,12 +29,7 @@ function calcularDigitoVerificador(cuerpo: string): string {
   return String(resto)
 }
 
-/**
- * Verifica el dígito verificador por módulo 11.
- *
- * Se usa solo como **advertencia** en el formulario, nunca para bloquear la consulta: el
- * RUT de ejemplo del enunciado, `12.345.678-9`, no lo cumple. Ver README.
- */
+/** Verifica el dígito verificador por módulo 11. */
 export function tieneDigitoVerificadorValido(rut: string): boolean {
   const normalizado = normalizarRut(rut)
 
@@ -43,7 +38,17 @@ export function tieneDigitoVerificadorValido(rut: string): boolean {
   return calcularDigitoVerificador(normalizado.slice(0, -1)) === normalizado.slice(-1)
 }
 
-/** Forma canónica con puntos y guion: `12.345.678-9`. */
+/**
+ * Validación completa: forma **y** dígito verificador.
+ *
+ * Se valida acá igual que en la API, para no gastar un viaje de red en un RUT que el
+ * servidor va a rechazar. El backend valida de todos modos: nunca se confía en el cliente.
+ */
+export function esRutValido(rut: string): boolean {
+  return esFormatoRutValido(rut) && tieneDigitoVerificadorValido(rut)
+}
+
+/** Forma canónica con puntos y guion: `12.345.678-5`. */
 export function formatearRut(rut: string): string {
   const normalizado = normalizarRut(rut)
 

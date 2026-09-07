@@ -45,15 +45,7 @@ export function calcularDigitoVerificador(cuerpo: string): string {
   return String(resto)
 }
 
-/**
- * Comprueba el dígito verificador (módulo 11).
- *
- * **No se usa como criterio de rechazo en la API, a propósito.** El RUT de ejemplo del
- * enunciado, `12.345.678-9`, no satisface el módulo 11 —le corresponde `5`—, así que
- * exigirlo haría que la propia respuesta de ejemplo de la especificación devolviera un
- * 400. La API valida la forma; el dígito verificador se ofrece como ayuda al usuario en
- * el formulario del frontend, sin bloquear la consulta.
- */
+/** Comprueba el dígito verificador (módulo 11). */
 export function tieneDigitoVerificadorValido(rut: string): boolean {
   const normalizado = normalizarRut(rut)
 
@@ -62,7 +54,20 @@ export function tieneDigitoVerificadorValido(rut: string): boolean {
   return calcularDigitoVerificador(normalizado.slice(0, -1)) === normalizado.slice(-1)
 }
 
-/** Pasa un RUT a su forma canónica con puntos y guion: `12.345.678-9`. */
+/**
+ * Validación completa: forma **y** dígito verificador.
+ *
+ * Es la que aplica la API. En un servicio de riesgo financiero, aceptar un RUT que no
+ * existe permitiría consultar identidades inventadas, así que el módulo 11 se exige.
+ *
+ * Efecto conocido: el RUT del ejemplo del enunciado, `12.345.678-9`, no lo cumple —le
+ * corresponde `5`— y por lo tanto se rechaza con `400`. Está documentado en el README.
+ */
+export function esRutValido(rut: string): boolean {
+  return esFormatoRutValido(rut) && tieneDigitoVerificadorValido(rut)
+}
+
+/** Pasa un RUT a su forma canónica con puntos y guion: `12.345.678-5`. */
 export function formatearRut(rut: string): string {
   const normalizado = normalizarRut(rut)
   const cuerpo = normalizado.slice(0, -1)

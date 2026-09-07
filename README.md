@@ -33,7 +33,7 @@ raíz instala las dependencias de los dos paquetes.
 | Email | Password | Rol | Puede consultar |
 |---|---|---|---|
 | `admin@prontopaga.cl` | `admin123` | `admin` | Cualquier RUT |
-| `user@prontopaga.cl` | `user123` | `user` | Solo `12.345.678-9` (el suyo) |
+| `user@prontopaga.cl` | `user123` | `user` | Solo `12.345.678-5` (el suyo) |
 
 Son credenciales de demostración, incluidas a propósito para que el proyecto se pueda
 ejecutar. No hay base de datos: la autenticación está simulada, como pide el enunciado.
@@ -114,12 +114,17 @@ el `401` cierra la sesión, el `403` no. Un `403` tampoco revela si el RUT exist
 estado ni aleatoriedad, de modo que la regla del enunciado —mismo RUT, mismo score— sea
 verificable con tests.
 
-**El dígito verificador del RUT se calcula pero no bloquea.** El módulo 11 está
-implementado y probado, y aun así la API valida solo la forma del RUT. El motivo es que el
-RUT de ejemplo del enunciado, `12.345.678-9`, no satisface el módulo 11 —le corresponde
-dígito `5`—, de modo que exigirlo haría fallar la propia respuesta de ejemplo de la
-especificación. Se privilegió respetar el enunciado, y la verificación queda disponible
-como advertencia en el formulario.
+**Se valida el dígito verificador del RUT (módulo 11).** En un servicio de riesgo
+financiero, aceptar un RUT que no existe permitiría consultar identidades inventadas, así
+que un RUT mal formado o con dígito incorrecto se rechaza con `400`. Se valida en el
+frontend para no gastar un viaje de red, y otra vez en el backend, porque no se confía en
+el cliente.
+
+> **Nota sobre el enunciado.** El RUT del ejemplo de la especificación, `12.345.678-9`, no
+> satisface el módulo 11: a `12345678` le corresponde dígito `5`. Por eso las credenciales
+> de prueba usan **`12.345.678-5`**, y una consulta a `12.345.678-9` responde `400`
+> deliberadamente. Se prefirió mantener la validación por sobre reproducir el ejemplo, dado
+> el dominio del problema.
 
 **`createApp()` está separado del arranque del servidor**, para que las pruebas levanten la
 API en memoria con supertest sin abrir un puerto.
