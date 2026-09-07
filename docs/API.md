@@ -27,7 +27,7 @@ Todos los errores comparten la misma forma, para que el frontend pueda ramificar
 | HTTP | `code` | Cuándo |
 |---|---|---|
 | 400 | `VALIDATION_ERROR` | Cuerpo o parámetro con forma inválida |
-| 400 | `INVALID_RUT` | El RUT no cumple formato o dígito verificador |
+| 400 | `INVALID_RUT` | El RUT no cumple el formato esperado |
 | 401 | `INVALID_CREDENTIALS` | Email o contraseña incorrectos en el login |
 | 401 | `UNAUTHENTICATED` | Falta el token, o su firma es inválida |
 | 401 | `TOKEN_EXPIRED` | El token es válido pero expiró |
@@ -151,10 +151,18 @@ para que el evaluador pueda ejecutar el proyecto. En un sistema real no existir�
 - **Formato canónico** (el que se muestra y se devuelve): `12.345.678-9`.
 - **Formato normalizado** (el que se compara y con el que se calcula): `123456789`, sin
   puntos ni guion, con `K` en mayúscula.
-- Se valida el **dígito verificador** (módulo 11). Un RUT con forma correcta pero dígito
-  incorrecto es `400 INVALID_RUT`.
-- El frontend valida antes de llamar, para no gastar un viaje de red; el backend valida
-  igual, porque nunca se confía en el cliente.
+- La API valida la **forma**: cuerpo numérico de 7 u 8 dígitos más un dígito verificador
+  (`0-9` o `K`). Lo que no cumple eso es `400 INVALID_RUT`.
+
+### Sobre el dígito verificador
+
+El **módulo 11 está implementado** (`tieneDigitoVerificadorValido`), pero **no se usa como
+criterio de rechazo**, por una razón concreta: el RUT de ejemplo del enunciado,
+`12.345.678-9`, no lo satisface —a `12345678` le corresponde dígito `5`, no `9`—. Exigirlo
+haría que la propia respuesta de ejemplo de la especificación devolviera un `400`.
+
+La decisión fue **respetar el ejemplo del enunciado**: la API valida la forma, y el dígito
+verificador se ofrece en el frontend como advertencia al escribir, sin bloquear la consulta.
 
 ---
 

@@ -66,6 +66,26 @@ desafío. Ningún código de la solución se escribió en esta etapa.
 - Redacción de este `README.md` y verificación de que sus instrucciones funcionan tal como
   están escritas.
 
+### 2026-09-07 — Implementación del backend
+
+**Asistido por Claude Code:**
+- Módulo de RUT: normalización, validación de forma, cálculo del dígito verificador
+  (módulo 11) y formato canónico.
+- Cálculo determinista del score con FNV-1a de 32 bits sobre el RUT normalizado.
+- Autenticación mock con comparación de contraseña en tiempo constante.
+- Firma y verificación de JWT, distinguiendo token expirado de token inválido.
+- Middlewares de autenticación y de autorización por rol, y manejador central de errores.
+- Endpoints `POST /login` y `GET /score/:rut`.
+- Suite de 33 pruebas: dominio de RUT, determinismo del score, y matriz de autenticación y
+  autorización sobre la API levantada en memoria con supertest.
+
+**Revisiones propias sobre lo generado:**
+- Se detectó que el payload del JWT usaba la clave `rol` en lugar de `role`, que es la que
+  fija el enunciado. Corregido.
+- Se detectó que el RUT de ejemplo del enunciado, `12.345.678-9`, no satisface el módulo 11.
+  Se decidió no rechazar por dígito verificador para no invalidar el ejemplo de la propia
+  especificación; queda documentado en el README y en `docs/API.md`.
+
 <!-- Las entradas del desarrollo de la solución van a continuación, a medida que ocurren -->
 
 ---

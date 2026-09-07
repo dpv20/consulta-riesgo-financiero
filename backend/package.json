@@ -1,7 +1,7 @@
 {
-  "name": "starter-api-node-ts",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "API REST de consulta de riesgo financiero",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",

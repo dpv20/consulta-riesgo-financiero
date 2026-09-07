@@ -114,6 +114,13 @@ el `401` cierra la sesión, el `403` no. Un `403` tampoco revela si el RUT exist
 estado ni aleatoriedad, de modo que la regla del enunciado —mismo RUT, mismo score— sea
 verificable con tests.
 
+**El dígito verificador del RUT se calcula pero no bloquea.** El módulo 11 está
+implementado y probado, y aun así la API valida solo la forma del RUT. El motivo es que el
+RUT de ejemplo del enunciado, `12.345.678-9`, no satisface el módulo 11 —le corresponde
+dígito `5`—, de modo que exigirlo haría fallar la propia respuesta de ejemplo de la
+especificación. Se privilegió respetar el enunciado, y la verificación queda disponible
+como advertencia en el formulario.
+
 **`createApp()` está separado del arranque del servidor**, para que las pruebas levanten la
 API en memoria con supertest sin abrir un puerto.
 
