@@ -4,6 +4,9 @@
   "private": true,
   "description": "MVP de consulta de score de riesgo financiero por RUT, con control de acceso por roles",
   "workspaces": ["backend", "frontend"],
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
     "dev": "concurrently -n api,web -c cyan,magenta \"npm run dev -w backend\" \"npm run dev -w frontend\"",
     "build": "npm run build -w backend && npm run build -w frontend",

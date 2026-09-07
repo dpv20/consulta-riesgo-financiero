@@ -34,7 +34,16 @@ export const useSesion = create<EstadoSesion>((set) => ({
   descartarAviso: () => set({ sesionExpirada: false }),
 }))
 
-// Cuando la API responde 401, la sesión local se cierra y se deja el aviso para el login.
-alPerderLaSesion(() => {
-  useSesion.setState({ usuario: null, sesionExpirada: true })
-})
+/**
+ * Enlaza el cliente HTTP con el estado de sesión: cuando la API rechaza el token, la
+ * sesión local se cierra y queda el aviso para mostrar en el login.
+ *
+ * Se llama explícitamente desde `main.tsx` en vez de ejecutarse al importar el módulo:
+ * un efecto secundario en la carga acopla el comportamiento al orden de los imports, y
+ * hace que los tests arrastren la conexión sin pedirla.
+ */
+export function conectarSesionConElCliente(): void {
+  alPerderLaSesion(() => {
+    useSesion.setState({ usuario: null, sesionExpirada: true })
+  })
+}

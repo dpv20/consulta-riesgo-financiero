@@ -10,7 +10,7 @@ autenticación JWT y control de acceso basado en roles.
 
 ## Requisitos
 
-- **Node.js 20 o superior** (desarrollado sobre 24.20.0 LTS)
+- **Node.js 20.19 o superior** (desarrollado sobre 24.20.0 LTS). Declarado en `engines`.
 - npm 10 o superior
 
 ## Puesta en marcha
@@ -138,6 +138,10 @@ el cliente.
 > de prueba usan **`12.345.678-5`**, y una consulta a `12.345.678-9` responde `400`
 > deliberadamente. Se prefirió mantener la validación por sobre reproducir el ejemplo, dado
 > el dominio del problema.
+
+**El tipo con la contraseña no sale de su módulo.** `RegistroUsuario` —que incluye la
+credencial— es privado de `services/usuarios.ts`; hacia afuera solo circula `Usuario`, sin
+contraseña. Así, un `res.json(usuario)` descuidado no puede filtrarla.
 
 **`createApp()` está separado del arranque del servidor**, para que las pruebas levanten la
 API en memoria con supertest sin abrir un puerto.
