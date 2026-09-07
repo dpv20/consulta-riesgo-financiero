@@ -1,35 +1,55 @@
 import axios from 'axios'
+import { normalizarError } from './errores.js'
 
 /**
- * Cliente HTTP central. La baseURL sale de `VITE_API_URL` (ver .env.example)
- * para no dejar endpoints hardcodeados en el bundle.
+ * Cliente HTTP central. La baseURL sale de `VITE_API_URL` (ver `.env.example`) para no
+ * dejar endpoints fijos en el bundle.
  */
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? '/api',
+  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
   timeout: 10_000,
   headers: { 'Content-Type': 'application/json' },
 })
 
-let accessToken: string | null = null
+let tokenDeAcceso: string | null = null
+let alPerderSesion: (() => void) | null = null
 
-/** El token vive en memoria, no en localStorage (menor superficie ante XSS). */
-export function setAccessToken(token: string | null) {
-  accessToken = token
+/**
+ * El token vive en memoria, no en `localStorage`.
+ *
+ * Reduce la superficie ante XSS: un script inyectado no puede leerlo del storage. El costo
+ * asumido es que la sesión se pierde al recargar. Para persistirla, la vía correcta sería
+ * una cookie `httpOnly` emitida por el backend.
+ */
+export function definirToken(token: string | null): void {
+  tokenDeAcceso = token
+}
+
+/** Permite a la capa de sesión reaccionar cuando la API rechaza la identidad. */
+export function alPerderLaSesion(callback: () => void): void {
+  alPerderSesion = callback
 }
 
 api.interceptors.request.use((config) => {
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`
+  if (tokenDeAcceso) {
+    config.headers.Authorization = `Bearer ${tokenDeAcceso}`
   }
+
   return config
 })
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      setAccessToken(null)
+  (error: unknown) => {
+    const normalizado = normalizarError(error)
+
+    // Solo un problema de identidad cierra la sesión. Un 403 no: la persona sigue
+    // autenticada, simplemente no tiene permiso sobre ese RUT.
+    if (normalizado.requiereReingreso) {
+      tokenDeAcceso = null
+      alPerderSesion?.()
     }
-    return Promise.reject(error)
+
+    return Promise.reject(normalizado)
   },
 )
