@@ -192,6 +192,14 @@ entorno.
 
 ## Despliegue
 
+La API está desplegada en **https://consulta-riesgo-api.onrender.com** — por ejemplo,
+[`/health`](https://consulta-riesgo-api.onrender.com/health).
+
+> Corre en la capa gratuita de Render, que suspende la instancia tras un rato sin uso.
+> **La primera petición después de un periodo de inactividad puede tardar cerca de un minuto
+> o devolver un error mientras el servicio despierta; basta reintentar.** No es un fallo de
+> la aplicación: el error lo emite el enrutador de Render antes de llegar al servidor.
+
 El repositorio incluye un blueprint de [Render](https://render.com) en `render.yaml`, con
 dos servicios: la API como *Web Service* de Node y el frontend como *Static Site*.
 
