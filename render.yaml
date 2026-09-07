@@ -3,12 +3,15 @@
 # Ambos servicios se construyen desde la raíz del repositorio, no desde sus subcarpetas:
 # al ser un monorepo con npm workspaces, el lockfile vive en la raíz y un `npm install`
 # dentro de cada paquete lo ignoraría.
+#
+# `--include=dev` es necesario porque Render define NODE_ENV=production, y con eso npm
+# omite las devDependencies, que es donde viven TypeScript y Vite.
 services:
   - type: web
     name: consulta-riesgo-api
     runtime: node
     plan: free
-    buildCommand: npm ci && npm run build -w backend
+    buildCommand: npm ci --include=dev && npm run build -w backend
     startCommand: npm start -w backend
     healthCheckPath: /health
     envVars:
@@ -17,6 +20,8 @@ services:
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: 15m
+      - key: NODE_VERSION
+        value: 24.20.0
       # Se completa a mano con la URL pública del frontend una vez creado.
       - key: CORS_ORIGIN
         sync: false
@@ -24,9 +29,11 @@ services:
   - type: web
     name: consulta-riesgo-web
     runtime: static
-    buildCommand: npm ci && npm run build -w frontend
+    buildCommand: npm ci --include=dev && npm run build -w frontend
     staticPublishPath: ./frontend/dist
     envVars:
+      - key: NODE_VERSION
+        value: 24.20.0
       # Vite incorpora esta variable en tiempo de compilación, así que tiene que estar
       # definida antes del build. Se completa con la URL pública de la API.
       - key: VITE_API_URL
