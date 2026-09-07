@@ -27,7 +27,7 @@ describe('Login', () => {
   it('muestra el formulario de ingreso', () => {
     renderWithProviders(<App />)
 
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/email o rut/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/contraseña/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /ingresar/i })).toBeInTheDocument()
   })
@@ -38,7 +38,7 @@ describe('Login', () => {
 
     renderWithProviders(<App />)
 
-    await usuario.type(screen.getByLabelText(/email/i), 'admin@prontopaga.cl')
+    await usuario.type(screen.getByLabelText(/email o rut/i), 'admin@prontopaga.cl')
     await usuario.type(screen.getByLabelText(/contraseña/i), 'incorrecta')
     await usuario.click(screen.getByRole('button', { name: /ingresar/i }))
 
@@ -53,11 +53,25 @@ describe('Login', () => {
 
     renderWithProviders(<App />)
 
-    await usuario.type(screen.getByLabelText(/email/i), 'admin@prontopaga.cl')
+    await usuario.type(screen.getByLabelText(/email o rut/i), 'admin@prontopaga.cl')
     await usuario.type(screen.getByLabelText(/contraseña/i), 'admin123')
     await usuario.click(screen.getByRole('button', { name: /ingresar/i }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/no pudimos conectar/i)
+  })
+
+  it('permite ingresar con el RUT en vez del email', async () => {
+    loginMock.mockResolvedValue({ token: 'un-token', user: USER })
+    const usuario = userEvent.setup()
+
+    renderWithProviders(<App />)
+
+    await usuario.type(screen.getByLabelText(/email o rut/i), '12.345.678-5')
+    await usuario.type(screen.getByLabelText(/contraseña/i), 'user123')
+    await usuario.click(screen.getByRole('button', { name: /ingresar/i }))
+
+    expect(loginMock).toHaveBeenCalledWith('12.345.678-5', 'user123')
+    expect(await screen.findByRole('button', { name: /consultar score/i })).toBeInTheDocument()
   })
 
   it('entra a la consulta cuando las credenciales son correctas', async () => {
@@ -66,7 +80,7 @@ describe('Login', () => {
 
     renderWithProviders(<App />)
 
-    await usuario.type(screen.getByLabelText(/email/i), 'user@prontopaga.cl')
+    await usuario.type(screen.getByLabelText(/email o rut/i), 'user@prontopaga.cl')
     await usuario.type(screen.getByLabelText(/contraseña/i), 'user123')
     await usuario.click(screen.getByRole('button', { name: /ingresar/i }))
 

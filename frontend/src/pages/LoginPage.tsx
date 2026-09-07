@@ -11,7 +11,7 @@ export function LoginPage() {
   const sesionExpirada = useSesion((estado) => estado.sesionExpirada)
   const descartarAviso = useSesion((estado) => estado.descartarAviso)
 
-  const [email, setEmail] = useState('')
+  const [identificador, setIdentificador] = useState('')
   const [password, setPassword] = useState('')
 
   const login = useIniciarSesion()
@@ -23,7 +23,7 @@ export function LoginPage() {
   function enviar(evento: FormEvent) {
     evento.preventDefault()
     descartarAviso()
-    login.mutate({ email: email.trim(), password })
+    login.mutate({ identificador: identificador.trim(), password })
   }
 
   return (
@@ -46,13 +46,14 @@ export function LoginPage() {
           {login.isError && <Alerta>{login.error.message}</Alerta>}
 
           <Campo
-            etiqueta="Email"
-            type="email"
-            name="email"
+            etiqueta="Email o RUT"
+            type="text"
+            name="identificador"
             autoComplete="username"
+            placeholder="tu@correo.cl o 12.345.678-5"
             required
-            value={email}
-            onChange={(evento) => setEmail(evento.target.value)}
+            value={identificador}
+            onChange={(evento) => setIdentificador(evento.target.value)}
             disabled={login.isPending}
           />
 
@@ -78,6 +79,9 @@ export function LoginPage() {
           <span className="font-mono">admin@prontopaga.cl / admin123</span>
           <br />
           <span className="font-mono">user@prontopaga.cl / user123</span>
+          <br />
+          El usuario con rol <span className="font-medium">user</span> también entra con su
+          RUT <span className="font-mono">12.345.678-5</span>
         </p>
       </div>
     </main>

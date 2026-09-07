@@ -14,11 +14,12 @@ interface RespuestaLogin {
   user: Usuario
 }
 
+/** `identificador` acepta el email o el RUT de la persona. */
 export async function iniciarSesion(
-  email: string,
+  identificador: string,
   password: string,
 ): Promise<RespuestaLogin> {
-  const { data } = await api.post<RespuestaLogin>('/login', { email, password })
+  const { data } = await api.post<RespuestaLogin>('/login', { identificador, password })
 
   return data
 }

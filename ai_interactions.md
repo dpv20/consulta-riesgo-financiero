@@ -102,6 +102,22 @@ desafío. Ningún código de la solución se escribió en esta etapa.
 - Nueve pruebas de flujo sobre la interfaz: ingreso correcto e incorrecto, fallo de red,
   redirección sin sesión, consulta exitosa, rechazo por RUT ajeno y validación local.
 
+### 2026-09-07 — Ajustes posteriores a la primera versión funcional
+
+**Asistido por Claude Code:**
+- Validación del dígito verificador del RUT (módulo 11) en frontend y backend.
+- Inicio de sesión con email **o** RUT, con el campo del contrato renombrado a
+  `identificador` y `email` mantenido como alias.
+- Verificación de la aplicación en un navegador real —no solo con pruebas automatizadas—
+  recorriendo login, consulta propia, rechazo por RUT ajeno, rechazo por dígito
+  verificador, consulta como `admin` y comportamiento responsive.
+
+**Decisiones propias en esta etapa:**
+- Exigir el módulo 11 fue una decisión de dominio: en un servicio de riesgo financiero
+  aceptar RUTs inexistentes permitiría consultar identidades inventadas. Se asumió
+  conscientemente que el RUT de ejemplo del enunciado quedara rechazado.
+- Permitir el ingreso por RUT responde a la convención de la banca chilena.
+
 <!-- Las entradas del desarrollo de la solución van a continuación, a medida que ocurren -->
 
 ---

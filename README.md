@@ -35,8 +35,13 @@ raíz instala las dependencias de los dos paquetes.
 | `admin@prontopaga.cl` | `admin123` | `admin` | Cualquier RUT |
 | `user@prontopaga.cl` | `user123` | `user` | Solo `12.345.678-5` (el suyo) |
 
+El usuario con rol `user` puede ingresar **con su email o con su RUT**, indistintamente.
+Los `admin` no tienen RUT asociado, así que entran solo por email.
+
 Son credenciales de demostración, incluidas a propósito para que el proyecto se pueda
-ejecutar. No hay base de datos: la autenticación está simulada, como pide el enunciado.
+ejecutar. No hay base de datos: la autenticación está simulada, como pide el enunciado, y
+los dos usuarios viven en una constante en `backend/src/services/usuarios.ts`. Los scores
+tampoco se almacenan: se calculan en cada consulta.
 
 ## Variables de entorno
 
@@ -113,6 +118,12 @@ el `401` cierra la sesión, el `403` no. Un `403` tampoco revela si el RUT exist
 **El score se calcula con una función pura y determinista** sobre el RUT normalizado, sin
 estado ni aleatoriedad, de modo que la regla del enunciado —mismo RUT, mismo score— sea
 verificable con tests.
+
+**Se puede iniciar sesión con email o con RUT.** En la banca chilena ingresar con RUT es
+la convención, y acá sale prácticamente gratis porque el RUT ya es parte del modelo. El
+campo del contrato se llama `identificador` justamente porque acepta ambos, y la respuesta
+de error es la misma en todos los casos, de modo que no se puede usar el login para
+averiguar qué RUTs están registrados.
 
 **Se valida el dígito verificador del RUT (módulo 11).** En un servicio de riesgo
 financiero, aceptar un RUT que no existe permitiría consultar identidades inventadas, así

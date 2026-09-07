@@ -50,8 +50,19 @@ Autenticación simulada contra credenciales mock. No hay base de datos.
 **Request**
 
 ```json
-{ "email": "user@prontopaga.cl", "password": "user123" }
+{ "identificador": "user@prontopaga.cl", "password": "user123" }
 ```
+
+`identificador` acepta **email o RUT** — ingresar con RUT es la convención en la banca
+chilena. El RUT se compara normalizado, así que da igual cómo venga escrito:
+
+```json
+{ "identificador": "12.345.678-5", "password": "user123" }
+```
+
+Los usuarios `admin` no tienen RUT y por lo tanto solo entran por email. La clave `email`
+se acepta como alias de `identificador`, para no romper a quien pruebe la API asumiendo
+ese nombre.
 
 **200 OK**
 
@@ -138,7 +149,7 @@ veces y compare, y con otro que compruebe que dos RUTs distintos difieren.
 
 | Email | Password | Rol | RUT |
 |---|---|---|---|
-| `admin@prontopaga.cl` | `admin123` | `admin` | — |
+| `admin@prontopaga.cl` | `admin123` | `admin` | — (solo entra por email) |
 | `user@prontopaga.cl` | `user123` | `user` | `12.345.678-5` |
 
 Credenciales de demostración para una prueba técnica: van en el repositorio a propósito,

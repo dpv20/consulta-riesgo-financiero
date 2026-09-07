@@ -1,5 +1,5 @@
 import { timingSafeEqual } from 'node:crypto'
-import { formatearRut } from './rut.js'
+import { formatearRut, normalizarRut } from './rut.js'
 
 export type Rol = 'admin' | 'user'
 
@@ -43,14 +43,36 @@ function comparacionSegura(a: string, b: string): boolean {
   return timingSafeEqual(bufferA, bufferB)
 }
 
-/** Devuelve el usuario si las credenciales calzan, o `null` si no. */
-export function autenticar(email: string, password: string): Usuario | null {
-  const usuario = USUARIOS.find(
-    (u) => u.email.toLowerCase() === email.trim().toLowerCase(),
+/**
+ * Busca por email o por RUT.
+ *
+ * Ingresar con RUT es la convención en la banca chilena, y acá sale gratis porque el RUT
+ * ya es parte del modelo. Se compara normalizado, así que da igual cómo venga escrito.
+ * Los usuarios `admin` no tienen RUT, y por lo tanto solo entran por email.
+ */
+function buscarUsuario(identificador: string): Usuario | undefined {
+  const email = identificador.trim().toLowerCase()
+  const rut = normalizarRut(identificador)
+
+  return USUARIOS.find(
+    (u) =>
+      u.email.toLowerCase() === email ||
+      // El largo mínimo evita que un identificador sin dígitos se normalice a algo
+      // corto y calce por accidente.
+      (rut.length >= 8 && u.rut !== undefined && normalizarRut(u.rut) === rut),
   )
+}
+
+/**
+ * Devuelve el usuario si las credenciales calzan, o `null` si no.
+ *
+ * `identificador` acepta el email o el RUT.
+ */
+export function autenticar(identificador: string, password: string): Usuario | null {
+  const usuario = buscarUsuario(identificador)
 
   // Se compara igual aunque el usuario no exista, para no revelar por tiempo de
-  // respuesta si el email está registrado.
+  // respuesta si el identificador está registrado.
   const passwordEsperada = usuario?.password ?? ''
   const coincide = comparacionSegura(password, passwordEsperada)
 
