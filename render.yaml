@@ -1,0 +1,39 @@
+# Blueprint de despliegue para Render.
+#
+# Ambos servicios se construyen desde la raíz del repositorio, no desde sus subcarpetas:
+# al ser un monorepo con npm workspaces, el lockfile vive en la raíz y un `npm install`
+# dentro de cada paquete lo ignoraría.
+services:
+  - type: web
+    name: consulta-riesgo-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build -w backend
+    startCommand: npm start -w backend
+    healthCheckPath: /health
+    envVars:
+      # Render genera un secreto aleatorio: nunca queda escrito en el repositorio.
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      # Se completa a mano con la URL pública del frontend una vez creado.
+      - key: CORS_ORIGIN
+        sync: false
+
+  - type: web
+    name: consulta-riesgo-web
+    runtime: static
+    buildCommand: npm ci && npm run build -w frontend
+    staticPublishPath: ./frontend/dist
+    envVars:
+      # Vite incorpora esta variable en tiempo de compilación, así que tiene que estar
+      # definida antes del build. Se completa con la URL pública de la API.
+      - key: VITE_API_URL
+        sync: false
+    routes:
+      # La SPA usa rutas del lado del cliente: cualquier ruta desconocida devuelve el
+      # index.html para que React Router la resuelva, en vez de un 404 del servidor.
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -152,6 +152,28 @@ npm test
 Cubren el cálculo determinista del score, la matriz de autorización por rol y el
 comportamiento de las vistas ante errores.
 
+## Despliegue
+
+El repositorio incluye un blueprint de [Render](https://render.com) en `render.yaml`, con
+dos servicios: la API como *Web Service* de Node y el frontend como *Static Site*.
+
+Ambos se construyen desde la raíz, no desde sus subcarpetas: al ser un monorepo con npm
+workspaces, el lockfile vive en la raíz y un `npm install` dentro de cada paquete lo
+ignoraría.
+
+Tras crear los servicios hay que completar dos variables que dependen de las URLs que
+Render asigna:
+
+- `VITE_API_URL` en el frontend → URL pública de la API.
+- `CORS_ORIGIN` en la API → URL pública del frontend.
+
+`JWT_SECRET` lo genera Render automáticamente, de modo que el secreto de firma nunca queda
+escrito en el repositorio.
+
+> En la capa gratuita los servicios se suspenden tras un rato sin uso, así que **la primera
+> petición después de un periodo de inactividad puede tardar cerca de un minuto**. No es un
+> error de la aplicación.
+
 ## Documentación adicional
 
 - [`docs/API.md`](docs/API.md) — contrato de la API: endpoints, payload del JWT, códigos de
