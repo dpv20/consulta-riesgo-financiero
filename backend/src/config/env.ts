@@ -20,4 +20,13 @@ if (!parsed.success) {
   throw new Error(`Configuración inválida:\n${detalle.join('\n')}`)
 }
 
-export const env = parsed.data
+/**
+ * `CORS_ORIGIN` admite varios orígenes separados por coma, para que convivan el entorno
+ * local y el sitio desplegado sin tener que reconfigurar al cambiar de uno a otro.
+ */
+export const env = {
+  ...parsed.data,
+  origenesPermitidos: parsed.data.CORS_ORIGIN.split(',')
+    .map((origen) => origen.trim())
+    .filter(Boolean),
+}

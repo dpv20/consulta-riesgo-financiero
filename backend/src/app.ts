@@ -12,7 +12,7 @@ import { scoreRouter } from './routes/score.routes.js'
 export function createApp(): Express {
   const app = express()
 
-  app.use(cors({ origin: env.CORS_ORIGIN }))
+  app.use(cors({ origin: env.origenesPermitidos }))
   app.use(express.json())
 
   app.get('/health', (_req, res) => {

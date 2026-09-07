@@ -11,6 +11,7 @@ a medida que avanza el desarrollo.
 | Claude Code | Opus 5 | En uso | Preparación del entorno, esqueleto de ambos proyectos, decisiones de arquitectura, documentación |
 | Antigravity | Gemini | No utilizada | Mejora de UI y diseño; experto en UX/UI |
 | Codex | GPT | No utilizada | Revisión final y definición de mejoras |
+|
 
 El desarrollo se resolvió utilizando Claude Code.
 

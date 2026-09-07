@@ -17,7 +17,9 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      {/* `BASE_URL` refleja la ruta base del build: '/' en local, el subdirectorio
+          en GitHub Pages. Sin esto, las rutas no resuelven al servirse anidadas. */}
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <App />
       </BrowserRouter>
     </QueryClientProvider>

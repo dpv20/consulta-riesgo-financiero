@@ -5,6 +5,10 @@ import { defineConfig } from 'vitest/config'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // GitHub Pages sirve el sitio desde un subdirectorio (/consulta-riesgo-financiero/),
+  // así que la ruta base se inyecta por entorno en ese build. En local y en cualquier
+  // hosting que sirva desde la raíz queda en '/', sin cambios.
+  base: process.env.VITE_BASE ?? '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

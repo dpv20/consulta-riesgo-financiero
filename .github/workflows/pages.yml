@@ -1,0 +1,61 @@
+name: Desplegar frontend en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Un solo despliegue a la vez; no se cancela el que esté en curso.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  construir:
+    name: Construir
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Construir el frontend
+        env:
+          # Vite incorpora estas variables al compilar, no las lee en tiempo de ejecución.
+          VITE_BASE: /${{ github.event.repository.name }}/
+          VITE_API_URL: https://consulta-riesgo-api.onrender.com
+        run: npm run build -w frontend
+
+      # GitHub Pages no admite reglas de reescritura: ante una ruta desconocida sirve
+      # 404.html. Al ser una copia del index, la SPA arranca igual y React Router
+      # resuelve la ruta en el cliente. Sin esto, recargar en /consulta daría 404.
+      - name: Preparar el fallback de la SPA
+        run: cp frontend/dist/index.html frontend/dist/404.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+  desplegar:
+    name: Desplegar
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
