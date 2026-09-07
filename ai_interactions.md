@@ -8,18 +8,16 @@ a medida que avanza el desarrollo.
 
 | Herramienta | Modelo | Estado | Uso |
 |---|---|---|---|
-| Claude Code | Opus 5 | En uso | Preparación del entorno, andamiaje de ambos proyectos, decisiones de arquitectura, documentación |
-| Antigravity | Gemini | No utilizada | Mejora de UI y diseño, vale decir experto en UX/UI
-| Codex | GPT | No utilizada | Revision final y definicion de mejoras |
+| Claude Code | Opus 5 | En uso | Preparación del entorno, esqueleto de ambos proyectos, decisiones de arquitectura, documentación |
+| Antigravity | Gemini | No utilizada | Mejora de UI y diseño; experto en UX/UI |
+| Codex | GPT | No utilizada | Revisión final y definición de mejoras |
 
-El desarrollo se resolvió íntegramente con Claude Code. Las otras dos herramientas se
-consideraron para repartir trabajo pero finalmente no se usaron, y no hay código suyo en el
-repositorio.
+El desarrollo se resolvió utilizando Claude Code.
 
 ## Criterio de uso
 
 La IA se usó como apoyo para planificar, estructurar y acelerar tareas mecánicas
-—configuración de herramientas, andamiaje, boilerplate— y como interlocutor para contrastar
+—configuración de herramientas, esqueleto, boilerplate— y como interlocutor para contrastar
 decisiones técnicas. Las decisiones de arquitectura y de seguridad se tomaron de forma
 explícita y están documentadas con su justificación, no aceptadas por defecto.
 
@@ -33,8 +31,8 @@ Todo lo de esta sección es configuración de herramientas, anterior al desarrol
 desafío. Ningún código de la solución se escribió en esta etapa.
 
 **Asistido por Claude Code:**
-- Instalación de Node.js 24.20.0 LTS en modo portable (la máquina no tenía Node).
-- Andamiaje de un proyecto Vite + React + TypeScript, con Tailwind 4, React Router,
+- Instalación de Node.js 24.20.0 LTS en modo portable.
+- El esqueleto de un proyecto Vite + React + TypeScript, con Tailwind 4, React Router,
   TanStack Query, Zustand, react-hook-form y zod.
 - Configuración de Vitest + Testing Library: `setup.ts`, y un helper `renderWithProviders`
   que monta Router y React Query para los tests.
@@ -42,10 +40,10 @@ desafío. Ningún código de la solución se escribió en esta etapa.
 - Cliente HTTP con axios: instancia central, `baseURL` por variable de entorno,
   interceptores de request y de respuesta 401.
 
-### 2026-09-07 — Andamiaje del backend (posterior al enunciado)
+### 2026-09-07 — Esqueleto del backend (posterior al enunciado)
 
 **Asistido por Claude Code:**
-- Andamiaje del proyecto de API: Express 5 + TypeScript en ESM, con `jsonwebtoken`, zod,
+- Esqueleto del proyecto de API: Express 5 + TypeScript en ESM, con `jsonwebtoken`, zod,
   `cors` y `dotenv`; Vitest + supertest para pruebas.
 - Configuración de TypeScript (`strict`, `noUncheckedIndexedAccess`), Prettier y scripts de
   `dev` / `build` / `test` / `typecheck`.
@@ -53,7 +51,7 @@ desafío. Ningún código de la solución se escribió en esta etapa.
   poder levantar la app en memoria desde los tests con supertest.
 - Validación de variables de entorno con zod al arrancar el proceso, de modo que la API no
   levante si falta el secreto de firma del JWT.
-- Endpoint `/health` y un test de humo, como verificación del andamiaje.
+- Endpoint `/health` y un test de humo, como verificación del esqueleto.
 
 ### 2026-09-07 — Estructura del repositorio y contrato de API
 
