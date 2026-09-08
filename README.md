@@ -12,7 +12,9 @@ autenticación JWT y control de acceso basado en roles.
 
 > La API corre en la capa gratuita de Render, que suspende la instancia tras un rato sin
 > uso. **El primer inicio de sesión después de un periodo de inactividad puede tardar cerca
-> de un minuto** mientras el servicio despierta; los siguientes son inmediatos.
+> de un minuto** mientras el servicio despierta; los siguientes son inmediatos. La interfaz
+> avisa de esa espera en pantalla y el cliente HTTP tiene un timeout holgado para que la
+> petición no se aborte antes de tiempo.
 
 ## Requisitos
 

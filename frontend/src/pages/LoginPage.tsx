@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom'
 import { Alerta } from '@/components/Alerta'
 import { Boton } from '@/components/Boton'
 import { Campo } from '@/components/Campo'
+import { useAvisoTrasEspera } from '@/hooks/useAvisoTrasEspera'
 import { useIniciarSesion } from '@/hooks/useIniciarSesion'
 import { useSesion } from '@/store/sesion'
 
@@ -15,6 +16,10 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
 
   const login = useIniciarSesion()
+
+  // La API vive en una capa gratuita que se suspende por inactividad: la primera
+  // petición puede tardar cerca de un minuto mientras despierta.
+  const esperaLarga = useAvisoTrasEspera(login.isPending)
 
   if (usuario) {
     return <Navigate to="/consulta" replace />
@@ -71,6 +76,13 @@ export function LoginPage() {
           <Boton type="submit" cargando={login.isPending}>
             Ingresar
           </Boton>
+
+          {esperaLarga && (
+            <p className="text-center text-xs text-slate-500" aria-live="polite">
+              El servidor estaba inactivo y está despertando. Esto puede tardar cerca de un
+              minuto la primera vez.
+            </p>
+          )}
         </form>
 
         <p className="mt-4 text-center text-xs leading-relaxed text-slate-500">

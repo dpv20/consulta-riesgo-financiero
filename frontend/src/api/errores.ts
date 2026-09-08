@@ -27,7 +27,7 @@ const MENSAJES: Record<CodigoError, string> = {
   FORBIDDEN_RUT: 'Solo puedes consultar tu propio RUT',
   NOT_FOUND: 'No encontramos lo que buscabas',
   INTERNAL_ERROR: 'Ocurrió un error inesperado, intenta de nuevo',
-  NETWORK_ERROR: 'No pudimos conectar con el servidor',
+  NETWORK_ERROR: 'No pudimos conectar con el servidor. Vuelve a intentar.',
 }
 
 export class ErrorApi extends Error {

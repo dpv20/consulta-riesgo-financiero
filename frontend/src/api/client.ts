@@ -5,9 +5,15 @@ import { normalizarError } from './errores.js'
  * Cliente HTTP central. La baseURL sale de `VITE_API_URL` (ver `.env.example`) para no
  * dejar endpoints fijos en el bundle.
  */
+/**
+ * El timeout es holgado a propósito. La API está desplegada en una capa gratuita que
+ * suspende la instancia por inactividad, y despertarla toma cerca de un minuto. Con un
+ * timeout corto, el cliente aborta la petición antes de que el servidor alcance a
+ * responder y el fallo se ve como si el servicio estuviera caído.
+ */
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
-  timeout: 10_000,
+  timeout: 90_000,
   headers: { 'Content-Type': 'application/json' },
 })
 
